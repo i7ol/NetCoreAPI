@@ -1,6 +1,15 @@
 using System.ComponentModel.DataAnnotations;
-namespace MvcMovie.Models;
-public class Employee : Person{
-    public string? EmployeeId{get;set;}
-    public int Age {get;set;}
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MvcMovie.Models
+{
+    [Table("Employees")]
+    public class Employee
+    {
+        [Key]
+        public string? EmployeeId { get; set; }  
+        public string? FullName{get;set;}
+        public string? Address{get;set;}
+        public int Age { get; set; } 
+    }
 }
