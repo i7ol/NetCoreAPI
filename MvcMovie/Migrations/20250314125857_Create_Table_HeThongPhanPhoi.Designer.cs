@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MvcMovie.Data;
 
@@ -10,9 +11,11 @@ using MvcMovie.Data;
 namespace MvcMovie.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250314125857_Create_Table_HeThongPhanPhoi")]
+    partial class Create_Table_HeThongPhanPhoi
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,11 +32,6 @@ namespace MvcMovie.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)");
-
                     b.Property<string>("MaHTPP")
                         .HasColumnType("nvarchar(max)");
 
@@ -43,10 +41,6 @@ namespace MvcMovie.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("HeThongPhanPhoi");
-
-                    b.HasDiscriminator().HasValue("HeThongPhanPhoi");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("MvcMovie.Models.Person", b =>
@@ -80,31 +74,6 @@ namespace MvcMovie.Migrations
                     b.HasDiscriminator().HasValue("Person");
 
                     b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("MvcMovie.Models.DaiLy", b =>
-                {
-                    b.HasBaseType("MvcMovie.Models.HeThongPhanPhoi");
-
-                    b.Property<string>("DiaChi")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DienThoai")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MaDaiLy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NguoiDaiDien")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TenDaiLy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ma_HTPP")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasDiscriminator().HasValue("DaiLy");
                 });
 
             modelBuilder.Entity("MvcMovie.Models.Employee", b =>

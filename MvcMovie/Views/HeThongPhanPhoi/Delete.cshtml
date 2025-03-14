@@ -1,4 +1,4 @@
-@model MvcMovie.Models.Person
+@model MvcMovie.Models.HeThongPhanPhoi
 
 @{
     ViewData["Title"] = "Delete";
@@ -8,26 +8,20 @@
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
-    <h4>Person</h4>
+    <h4>HeThongPhanPhoi</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PersonId)
+            @Html.DisplayNameFor(model => model.MaHTPP)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PersonId)
+            @Html.DisplayFor(model => model.MaHTPP)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FullName)
+            @Html.DisplayNameFor(model => model.TenHTPP)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FullName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Age)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Age)
+            @Html.DisplayFor(model => model.TenHTPP)
         </dd>
     </dl>
     
