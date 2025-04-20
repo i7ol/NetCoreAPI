@@ -8,15 +8,19 @@ using Microsoft.EntityFrameworkCore;
 using MvcMovie.Data;
 using MvcMovie.Models;
 
+
 namespace MvcMovie.Controllers
 {
     public class PersonController : Controller
     {
         private readonly ApplicationDbContext _context;
 
+        private ExcelProcess _excelProcess = new ExcelProcess();
+
         public PersonController(ApplicationDbContext context)
         {
             _context = context;
+            _excelProcess = new ExcelProcess();
         }
 
         // GET: Person
@@ -24,6 +28,65 @@ namespace MvcMovie.Controllers
         {
             return View(await _context.Person.ToListAsync());
         }
+
+        public async Task<IActionResult> Upload ()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Upload(IFormFile file)
+        {
+            if (file != null)
+            {
+                string fileExtension = Path.GetExtension(file.FileName);
+                if (fileExtension != ".xls" && fileExtension != ".xlsx")
+                {
+                    ModelState.AddModelError("", "Please choose an Excel file to upload!");
+                }
+                else
+                {
+                    // Đổi tên file để tránh trùng lặp
+                    var fileName = DateTime.Now.ToString("yyyyMMdd_HHmmss") + fileExtension;
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Excels", fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    // Đọc dữ liệu từ Excel và chuyển thành List<Person>
+                    var peopleList = new List<Person>();
+
+                    using (var package = new ExcelPackage(new FileInfo(filePath)))
+                    {
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Lấy sheet đầu tiên
+                        int rowCount = worksheet.Dimension.Rows;
+
+                        for (int row = 2; row <= rowCount; row++) // Bỏ qua hàng tiêu đề
+                        {
+                            var person = new Person
+                            {
+                                PersonId = worksheet.Cells[row, 1].Text, // Cột 1
+                                FullName = worksheet.Cells[row, 2].Text, // Cột 2
+                                Age = int.TryParse(worksheet.Cells[row, 3].Text, out int age) ? age : 0 // Cột 3 (nếu rỗng thì gán 0)
+                            };
+
+                            peopleList.Add(person);
+                        }
+                    }
+
+                    // Lưu vào database
+                    await _context.AddRangeAsync(peopleList);
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            return View();
+        }
+
 
         // GET: Person/Details/5
         public async Task<IActionResult> Details(int? id)
