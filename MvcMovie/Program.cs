@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MvcMovie.Data;
+using Microsoft.AspNetCore.Identity;
+using MvcMovie.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -7,6 +9,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
 
 // Add services to the container.
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -31,5 +35,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-
+app.MapRazorPages();
 app.Run();

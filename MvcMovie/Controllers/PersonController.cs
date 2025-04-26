@@ -7,10 +7,18 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MvcMovie.Data;
 using MvcMovie.Models;
-
+using MvcMovie.Models.Process;
+using OfficeOpenXml;
+using System.IO;          
+using X.PagedList;
+using X.PagedList.Mvc.Core;
+using X.PagedList.Extensions;
+using System.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MvcMovie.Controllers
 {
+    [Authorize]
     public class PersonController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,15 +28,18 @@ namespace MvcMovie.Controllers
         public PersonController(ApplicationDbContext context)
         {
             _context = context;
-            _excelProcess = new ExcelProcess();
         }
 
         // GET: Person
-        public async Task<IActionResult> Index()
+        public ActionResult Index(int? page)
         {
-            return View(await _context.Person.ToListAsync());
+             int pageSize = 3; // số mục mỗi trang
+             int pageNumber = page ?? 1; // trang hiện tại
+ 
+             var users = _context.Person.OrderBy(u => u.Id); // truy vấn danh sách
+ 
+             return View(users.ToPagedList(pageNumber, pageSize));
         }
-
         public async Task<IActionResult> Upload ()
         {
             return View();
@@ -48,43 +59,55 @@ namespace MvcMovie.Controllers
                 else
                 {
                     // Đổi tên file để tránh trùng lặp
-                    var fileName = DateTime.Now.ToString("yyyyMMdd_HHmmss") + fileExtension;
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Excels", fileName);
-
+                    var fileName = DateTime.Now.ToShortTimeString() + fileExtension;
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory() + "/Uploads/Excels", fileName);
+                    var fileLocation = new FileInfo(filePath).ToString();
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await file.CopyToAsync(stream);
-                    }
-
-                    // Đọc dữ liệu từ Excel và chuyển thành List<Person>
-                    var peopleList = new List<Person>();
-
-                    using (var package = new ExcelPackage(new FileInfo(filePath)))
-                    {
-                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Lấy sheet đầu tiên
-                        int rowCount = worksheet.Dimension.Rows;
-
-                        for (int row = 2; row <= rowCount; row++) // Bỏ qua hàng tiêu đề
+                        var dt = _excelProcess.ExcelToDataTable(fileLocation);
+                        for (int i = 0; i < dt.Rows.Count; i++)
                         {
-                            var person = new Person
-                            {
-                                PersonId = worksheet.Cells[row, 1].Text, // Cột 1
-                                FullName = worksheet.Cells[row, 2].Text, // Cột 2
-                                Age = int.TryParse(worksheet.Cells[row, 3].Text, out int age) ? age : 0 // Cột 3 (nếu rỗng thì gán 0)
-                            };
-
-                            peopleList.Add(person);
+                            var ps = new Person();
+                            ps.PersonId = dt.Rows[i][0].ToString();
+                            ps.FullName = dt.Rows[i][1].ToString();
+                            ps.Address = dt.Rows[i][2].ToString();
+                            _context.Add(ps);
                         }
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
                     }
-
-                    // Lưu vào database
-                    await _context.AddRangeAsync(peopleList);
-                    await _context.SaveChangesAsync();
-
-                    return RedirectToAction(nameof(Index));
                 }
             }
             return View();
+        }
+        public IActionResult Download()
+        {
+            // Đặt tên file tải về
+            var fileName = "YourFileName" + ".xlsx";
+
+            using (ExcelPackage excelPackage = new ExcelPackage())
+            {
+                // Tạo sheet mới trong Excel
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
+
+                // Thiết lập tiêu đề cột
+                worksheet.Cells["A1"].Value = "PersonID";
+                worksheet.Cells["B1"].Value = "FullName";
+                worksheet.Cells["C1"].Value = "Address";
+
+                // Lấy dữ liệu từ cơ sở dữ liệu
+                var personList = _context.Person.ToList();
+
+                // Ghi dữ liệu từ dòng thứ 2
+                worksheet.Cells["A2"].LoadFromCollection(personList);
+
+                // Chuyển nội dung Excel thành mảng byte
+                var stream = new MemoryStream(excelPackage.GetAsByteArray());
+
+                // Trả file về trình duyệt
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
         }
 
 

@@ -1,33 +1,53 @@
-using OfficeOpenXml;
-using System.Collections.Generic;
+using System;
+using System.Data;
 using System.IO;
+using OfficeOpenXml;
 
 namespace MvcMovie.Models.Process
 {
     public class ExcelProcess
     {
-        public List<Person> ExcelToList(string filePath)
+        public DataTable ExcelToDataTable(string filePath)
         {
-            var peopleList = new List<Person>();
-
-            using (var package = new ExcelPackage(new FileInfo(filePath)))
+            DataTable dt = new DataTable();
+            try
             {
-                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
-                int rowCount = worksheet.Dimension.Rows;
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Chỉ định giấy phép sử dụng
 
-                for (int row = 2; row <= rowCount; row++)
+                using (var package = new ExcelPackage(new FileInfo(filePath)))
                 {
-                    var person = new Person
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Lấy sheet đầu tiên
+                    if (worksheet == null)
                     {
-                        PersonId = worksheet.Cells[row, 1].Text,
-                        FullName = worksheet.Cells[row, 2].Text,
-                        Age = int.TryParse(worksheet.Cells[row, 3].Text, out int age) ? age : 0
-                    };
-                    peopleList.Add(person);
+                        throw new Exception("No worksheet found in Excel file.");
+                    }
+
+                    int colCount = worksheet.Dimension.End.Column; // Số cột
+                    int rowCount = worksheet.Dimension.End.Row;   // Số dòng
+
+                    // Thêm cột vào DataTable (lấy từ dòng đầu tiên)
+                    for (int col = 1; col <= colCount; col++)
+                    {
+                        dt.Columns.Add(worksheet.Cells[1, col].Value?.ToString() ?? $"Column{col}");
+                    }
+
+                    // Đọc dữ liệu từ dòng thứ 2 trở đi
+                    for (int row = 2; row <= rowCount; row++)
+                    {
+                        DataRow dr = dt.NewRow();
+                        for (int col = 1; col <= colCount; col++)
+                        {
+                            dr[col - 1] = worksheet.Cells[row, col].Value?.ToString() ?? string.Empty;
+                        }
+                        dt.Rows.Add(dr);
+                    }
                 }
             }
-
-            return peopleList;
+            catch (Exception ex)
+            {
+                throw new Exception("Error while processing Excel file: " + ex.Message);
+            }
+            return dt;
         }
     }
 }
