@@ -463,3 +463,6 @@ E:\NetCoreAPI\MvcMovie\obj\Debug\net9.0\refint\MvcMovie.dll
 E:\NetCoreAPI\MvcMovie\obj\Debug\net9.0\MvcMovie.pdb
 E:\NetCoreAPI\MvcMovie\obj\Debug\net9.0\MvcMovie.genruntimeconfig.cache
 E:\NetCoreAPI\MvcMovie\obj\Debug\net9.0\ref\MvcMovie.dll
+E:\NetCoreAPI\MvcMovie\bin\Debug\net9.0\BouncyCastle.Cryptography.dll
+E:\NetCoreAPI\MvcMovie\bin\Debug\net9.0\MailKit.dll
+E:\NetCoreAPI\MvcMovie\bin\Debug\net9.0\MimeKit.dll
