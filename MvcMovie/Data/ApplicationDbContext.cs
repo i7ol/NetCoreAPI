@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MvcMovie.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using MvcMovie.Models.Entities;
 
 namespace MvcMovie.Data{
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
@@ -9,7 +10,8 @@ namespace MvcMovie.Data{
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options):base(options)
         {}
         public DbSet<Person> Person{get;set;}
-        public DbSet<Employee> Employee{get;set; } = default!;
+        public DbSet<Employee> Employee{get;set;}
+        public DbSet<MemberUnit> MemberUnit{get;set;}
         public DbSet<HeThongPhanPhoi> HeThongPhanPhoi{get;set;}
         public DbSet<DaiLy> DaiLy{get;set; } = default!;
         

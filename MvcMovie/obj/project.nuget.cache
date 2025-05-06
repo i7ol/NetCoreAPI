@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "dtFst2TnllI=",
+  "dgSpecHash": "4OIuM4ve9hE=",
   "success": true,
   "projectFilePath": "E:\\NetCoreAPI\\MvcMovie\\MvcMovie.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\wuoca\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\wuoca\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
+    "C:\\Users\\wuoca\\.nuget\\packages\\bogus\\35.6.3\\bogus.35.6.3.nupkg.sha512",
     "C:\\Users\\wuoca\\.nuget\\packages\\bouncycastle.cryptography\\2.5.1\\bouncycastle.cryptography.2.5.1.nupkg.sha512",
     "C:\\Users\\wuoca\\.nuget\\packages\\entityframework\\6.5.1\\entityframework.6.5.1.nupkg.sha512",
     "C:\\Users\\wuoca\\.nuget\\packages\\epplus\\7.6.1\\epplus.7.6.1.nupkg.sha512",

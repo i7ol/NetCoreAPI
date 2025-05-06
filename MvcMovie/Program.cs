@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MvcMovie.Data;
 using Microsoft.AspNetCore.Identity;
 using MvcMovie.Models;
+using MvcMovie.Models.Entities;
 using MvcMovie.Models.Process;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -56,7 +57,17 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
     options.SlidingExpiration = true;
 });
+
+builder.Services.AddTransient<EmployeeSeeder>();
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var seeder = services.GetRequiredService<EmployeeSeeder>();
+    seeder.SeedEmployees(1000);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
