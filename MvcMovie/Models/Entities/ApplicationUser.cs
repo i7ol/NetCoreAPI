@@ -5,6 +5,7 @@ namespace MvcMovie.Models
     {
         [PersonalData]
         public string FullName {get; set;}
+        
     }
     
 }

@@ -4,8 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using MvcMovie.Models;
 using MvcMovie.Models.ViewModels;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using MvcMovie.Models.Process;
 namespace MvcMovie.Controllers
 {
+    [Authorize(Policy = "PolicyByPhoneNumber")]
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -15,6 +18,7 @@ namespace MvcMovie.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
         }
+        [Authorize(Policy = nameof(SystemPermissions.AccountView))]
         public async Task<IActionResult> Index()
         {
             var users = await _userManager.Users.ToListAsync();
@@ -26,6 +30,7 @@ namespace MvcMovie.Controllers
             }
             return View(usersWithRoles);
         }
+        [Authorize(Policy =nameof(SystemPermissions.AssignRole))]
         public async Task<IActionResult> AssignRole(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);

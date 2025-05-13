@@ -5,6 +5,7 @@
     <thead>
         <tr>
             <th>Username</th>
+            <th>PhoneNumber</th>
             <th>Roles</th>
             <th>Action</th>
         </tr>
@@ -14,6 +15,7 @@
         {
             <tr>
                 <td>@userWithRoles.User.UserName</td>
+                <td>@userWithRoles.User.PhoneNumber</td>
                 <td>
                     @foreach(var role in userWithRoles.Roles)
                     {

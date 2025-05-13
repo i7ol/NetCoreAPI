@@ -11,7 +11,7 @@ using MvcMovie.Models.Entities;
 
 namespace MvcMovie.Controllers
 {
-    [Authorize(Policy = "Permission")]
+    [Authorize(Policy = "PolicyEmployee")]
     public class MemberUnitController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -46,7 +46,7 @@ namespace MvcMovie.Controllers
         }
 
         // GET: MemberUnit/Create
-        [Authorize(Policy = "Role")]
+        [Authorize(Policy = "PolicyAdmin")]
         public IActionResult Create()
         {
             return View();

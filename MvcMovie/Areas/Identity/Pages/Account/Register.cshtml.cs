@@ -72,6 +72,11 @@ namespace MvcMovie.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
+            [Phone]
+            [Display(Name = "Phone Number")]
+            public string PhoneNumber { get; set; }
+
+            [Required]
             [Display(Name = "Full Name")]
             public string FullName { get; set; }
             /// <summary>
@@ -118,7 +123,8 @@ namespace MvcMovie.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
                 user.FullName = Input.FullName;
-                
+                user.PhoneNumber = Input.PhoneNumber;
+
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
